@@ -61,14 +61,6 @@ int main() {
             continue;
         }
 
-        // Validate move by temporarily clearing the cell, so editing a user-filled cell works correctly.
-        int oldValue = board[rows - 1][cols - 1];
-        board[rows - 1][cols - 1] = 0;
-        if (!isValid(rows - 1, cols - 1, number)) {
-            board[rows - 1][cols - 1] = oldValue;
-            puts("Invalid move for Sudoku rules");
-            continue;
-        }
 
         board[rows - 1][cols - 1] = number;
 
