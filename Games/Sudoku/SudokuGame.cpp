@@ -41,10 +41,16 @@ int main() {
     while (flag) {
         printBoard();
         puts("Please enter your Input like: ROW(1-9) COL(1-9) NUM(1-9) or 0 0 0 to end");
-        cin >> rows >> cols >> number;
+        if (!(cin >> rows >> cols >> number)) {
+            puts("Invalid input");
+            cin.clear();
+            cin.ignore(10000, '\n');
+            continue;
+        }
 
-        if (rows ==0) {
+        if (rows == 0 && cols == 0 && number == 0) {
             flag = false;
+            continue;
         }
         if (rows < 1 || rows > 9 || cols < 1 || cols > 9 || number < 1 || number > 9) {
             puts("Invalid input");
@@ -54,6 +60,16 @@ int main() {
             puts("Can't change initial numbers!!!");
             continue;
         }
+
+        // Validate move by temporarily clearing the cell, so editing a user-filled cell works correctly.
+        int oldValue = board[rows - 1][cols - 1];
+        board[rows - 1][cols - 1] = 0;
+        if (!isValid(rows - 1, cols - 1, number)) {
+            board[rows - 1][cols - 1] = oldValue;
+            puts("Invalid move for Sudoku rules");
+            continue;
+        }
+
         board[rows - 1][cols - 1] = number;
 
         if (isSudokuWon()) {
@@ -128,12 +144,7 @@ void printBoard() {
                 cout << ". ";
             }
             else {
-                if (initialBoard[i][j] != 0) {
-                    cout << board[i][j] << " " ;
-                }
-                else {
-                    cout << board[i][j] << " ";
-                }
+                cout << board[i][j] << " ";
             }
         }
         cout << "|\n";
@@ -150,8 +161,9 @@ bool isSudokuWon() {
                 return false;
             }
             board[i][j] = 0; // temporaly remove the number to check for the others
-            if (isValid(i, j, currentNumber)) {
-                return true;
+            if (!isValid(i, j, currentNumber)) {
+                board[i][j] = currentNumber; // restore before failing
+                return false;
             }
             board[i][j] = currentNumber; // comes back
         }
