@@ -5,10 +5,11 @@ using std::cin, std::cout, std::endl;
 
 int board[9][9];
 int initialBoard[9][9];
+int solvedBoard[9][9];
 
 bool isValid(int rows, int cols, int num);
 bool fillBoard();
-void printBoard();
+void printBoard(const int grid[9][9]);
 bool isSudokuWon();
 void setDifficulty();
 
@@ -22,6 +23,12 @@ int main() {
     }
 
     fillBoard();
+
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            solvedBoard[i][j] = board[i][j];
+        }
+    }
 
     //DIFICULTY
 
@@ -39,25 +46,29 @@ int main() {
 
     bool flag = true;
     while (flag) {
-        printBoard();
-        puts("Please enter your Input like: ROW(1-9) COL(1-9) NUM(1-9) or 0 0 0 to end");
+        printBoard(board);
+        cout << "Please enter your Input like: ROW(1-9) COL(1-9) NUM(1-9) or 0 0 0 to solve and exit\n";
+
         if (!(cin >> rows >> cols >> number)) {
-            puts("Invalid input");
+            cout << "Invalid input\n";
             cin.clear();
             cin.ignore(10000, '\n');
             continue;
         }
 
+        cin.ignore(10000, '\n');
+
         if (rows == 0 && cols == 0 && number == 0) {
+            printBoard(solvedBoard);
             flag = false;
-            continue;
+            break;
         }
         if (rows < 1 || rows > 9 || cols < 1 || cols > 9 || number < 1 || number > 9) {
-            puts("Invalid input");
+            cout << "Invalid input\n";
             continue;
         }
         if (initialBoard[rows - 1][cols - 1] != 0) {
-            puts("Can't change initial numbers!!!");
+            cout << "Can't change initial numbers!!!\n";
             continue;
         }
 
@@ -65,8 +76,8 @@ int main() {
         board[rows - 1][cols - 1] = number;
 
         if (isSudokuWon()) {
-            printBoard();
-            puts("GG WP smart boi!");
+            printBoard(board);
+            cout << "GG WP smart boi!\n";
             flag = false;
         }
     }
@@ -116,13 +127,13 @@ bool fillBoard() {
     return true; //gg
 }
 
-void printBoard() {
-    puts("    1 2 3   4 5 6   7 8 9");
-    puts("  -------------------------");
+void printBoard(const int grid[9][9]) {
+    cout << "    1 2 3   4 5 6   7 8 9\n";
+    cout << "  -------------------------\n";
 
     for (int i = 0; i < 9; i++) {
         if (i > 0 && i % 3 == 0) {
-            puts("  |-------+-------+-------|");
+            cout << "  |-------+-------+-------|\n";
         }
 
         cout << i + 1 << " | ";
@@ -132,16 +143,16 @@ void printBoard() {
                 cout << "| ";
             }
 
-            if (board[i][j] == 0) {
+            if (grid[i][j] == 0) {
                 cout << ". ";
             }
             else {
-                cout << board[i][j] << " ";
+                cout << grid[i][j] << " ";
             }
         }
         cout << "|\n";
     }
-    puts("  -------------------------");
+    cout << "  -------------------------\n";
 }
 
 bool isSudokuWon() {
